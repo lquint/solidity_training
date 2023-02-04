@@ -6,6 +6,7 @@ contract Whitelist {
     uint8 public maxWhitelistedAddresses;
     uint8 public numberWhitelisted;
     mapping(address => bool ) public whitelistedAddresses;
+    event maxReached(uint8 membersCount);
 
     constructor(uint8 _maxWhitelistedAddresses){
         owner = msg.sender;
@@ -29,6 +30,9 @@ contract Whitelist {
         require(numberWhitelisted<maxWhitelistedAddresses, "Whitelist limit reached, additionnal members cannot be added");
         whitelistedAddresses[msg.sender] = true;
         numberWhitelisted+=1;
+        if(maxWhitelistedAddresses==numberWhitelisted){
+            emit maxReached(numberWhitelisted);
+        }
     }
 
     function removeAddress(address _member) public onlyOwner {
@@ -39,6 +43,10 @@ contract Whitelist {
     }
 
     function setWhitelistCapacity(uint8 _maxNumber) public onlyOwner {
+        require(_maxNumber>=numberWhitelisted,"Cannot set whitelist capacity below current members count");
+        if(_maxNumber==numberWhitelisted){
+            emit maxReached(numberWhitelisted);
+        }
         maxWhitelistedAddresses=_maxNumber;
     }
 }
