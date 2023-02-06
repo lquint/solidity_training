@@ -38,9 +38,32 @@ describe("Deployment", function () {
 
 describe("Adding addresses to whitelist", function(){
     it("Should add whitelisted users correctly in normal conditions", async function(){
-        const { whitelist, accounts} = await loadFixture(deployWhitelistFixture);
+        const { whitelist, accounts, whitelistCapacity} = await loadFixture(deployWhitelistFixture);
+
+        for (let i=0;i<whitelistCapacity;i++){
+            await whitelist.connect(accounts[i]).addAddress()
+            expect(await whitelist.whitelistedAddresses(accounts[i].address)).to.be.true
+        }
+        
+    })
+
+    it("Should revert when an user tries to get whitelisted twice", async function(){
+        const { whitelist, accounts, whitelistCapacity} = await loadFixture(deployWhitelistFixture);
 
         await whitelist.connect(accounts[1]).addAddress()
-        expect(await whitelist.whitelistedAddresses(accounts[1].address)).to.be.true
+        await expect(whitelist.connect(accounts[1]).addAddress()).to.be.revertedWith("Sender has already been whitelisted")
+        
+    })
+
+    it("Should revert when user tries to get whitelisted when the list is full", async function(){
+        const { whitelist, accounts, whitelistCapacity} = await loadFixture(deployWhitelistFixture);
+
+        for (let i=0;i<whitelistCapacity;i++){
+            await whitelist.connect(accounts[i]).addAddress()
+            expect(await whitelist.whitelistedAddresses(accounts[i].address)).to.be.true
+        }
+
+        await expect(whitelist.connect(accounts[whitelistCapacity+1]).addAddress()).to.be.revertedWith("Whitelist limit reached, additionnal members cannot be added")
+        
     })
 })
