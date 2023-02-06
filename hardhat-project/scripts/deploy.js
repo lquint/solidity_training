@@ -27,6 +27,11 @@ async function main() {
   const greeter = await Greeter.deploy(greetingMessage);
   await greeter.deployed();
   console.log("Greet deployed with greeting message :" + greetingMessage)
+
+  const Whitelist = await hre.ethers.getContractFactory("Whitelist");
+  const whitelist = await Whitelist.deploy(5);
+  await whitelist.deployed();
+  console.log("Whitelist deployed")
 }
 
 // We recommend this pattern to be able to use async/await everywhere
