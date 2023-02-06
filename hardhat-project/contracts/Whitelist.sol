@@ -36,8 +36,8 @@ contract Whitelist {
     }
 
     function removeAddress(address _member) public onlyOwner {
-        require(whitelistedAddresses[_member], "Target iser is not whitelisted");
         require(numberWhitelisted>0, "Whitelist is empty, there are no members to remove");
+        require(whitelistedAddresses[_member], "Target user is not whitelisted");
         whitelistedAddresses[_member] = false;
         numberWhitelisted-=1;
     }
