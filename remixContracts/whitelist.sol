@@ -49,4 +49,8 @@ contract Whitelist {
         }
         maxWhitelistedAddresses=_maxNumber;
     }
+
+    function checkInWhitelist(address _address) public view returns (bool){
+        return whitelistedAddresses[_address];
+    }
 }
